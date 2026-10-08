@@ -13,7 +13,6 @@
 
   <style>
     :root {
-      /* 🎨 لوحة الألوان الجديدة: أزرق + أسود + أبيض */
       --blue-1: #00c8ff;
       --blue-2: #0090e0;
       --blue-3: #0066b3;
@@ -31,11 +30,14 @@
       --radius-md: 16px;
       --gradient: linear-gradient(160deg, #00c8ff 0%, #0090e0 25%, #0066b3 55%, #003d73 100%);
       --gradient-flow: linear-gradient(160deg, #00c8ff 0%, #0077d4 30%, #003d73 65%, #001a33 100%);
+      /* منحنى السلاسة القوي */
+      --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    html { -webkit-text-size-adjust: 100%; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
     body {
       font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
@@ -58,7 +60,6 @@
       position: relative;
     }
 
-    /* ═════ جزيئات متوهجة متحركة ═════ */
     body::before,
     body::after {
       content: '';
@@ -100,9 +101,15 @@
       padding: 3px;
       box-shadow: 0 0 25px var(--blue-glow), 0 8px 24px rgba(0, 0, 0, 0.6);
       overflow: hidden;
+      animation: fadeDown 0.8s var(--ease-soft) both;
     }
 
     body.lang-en .lang-toggle { left: auto; right: max(14px, env(safe-area-inset-right)); }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .lang-btn {
       padding: 7px 13px;
@@ -114,7 +121,7 @@
       color: rgba(255, 255, 255, 0.5);
       border-radius: 25px;
       font-family: inherit;
-      transition: 0.3s;
+      transition: all 0.4s var(--ease-soft);
       white-space: nowrap;
     }
 
@@ -124,13 +131,197 @@
       box-shadow: 0 0 16px var(--blue-glow);
     }
 
+    /* ═══════════════════════════════════════════════
+       💬 رسالة الترحيب (جديدة - بداية حلوة)
+       ═══════════════════════════════════════════════ */
+    .welcome-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(2, 6, 14, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: opacity 0.6s var(--ease-soft), visibility 0.6s;
+      animation: fadeIn 0.6s var(--ease-soft);
+    }
+
+    .welcome-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .welcome-card {
+      max-width: 380px;
+      width: 100%;
+      background: var(--gradient-flow);
+      background-size: 200% 200%;
+      animation: colorFlow 6s ease infinite, welcomePop 0.9s var(--ease-bounce);
+      border-radius: var(--radius-xl);
+      padding: 36px 26px 30px;
+      border: 2.5px solid var(--blue-1);
+      box-shadow:
+        0 0 45px var(--blue-glow),
+        0 0 90px rgba(0, 100, 220, 0.3),
+        0 24px 60px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #ffffff, transparent);
+      pointer-events: none;
+    }
+
+    @keyframes welcomePop {
+      0% { opacity: 0; transform: scale(0.7) translateY(40px); }
+      60% { opacity: 1; transform: scale(1.05) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes colorFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .welcome-emoji {
+      font-size: 68px;
+      display: block;
+      margin-bottom: 14px;
+      animation: bounceEmoji 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px var(--blue-glow));
+    }
+
+    .welcome-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .welcome-text strong {
+      color: var(--blue-1);
+      font-weight: 900;
+      text-shadow: 0 0 15px var(--blue-glow);
+    }
+
+    /* ═════ رسالة "يجب إضافة لايك أو تعليق" ═════ */
+    .welcome-notice {
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid var(--blue-1);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: right;
+      box-shadow: 0 0 25px var(--blue-glow), inset 0 0 20px rgba(0, 170, 255, 0.1);
+      animation: noticePulse 2.5s ease-in-out infinite;
+    }
+
+    body.lang-en .welcome-notice { text-align: left; }
+
+    @keyframes noticePulse {
+      0%, 100% { box-shadow: 0 0 25px var(--blue-glow), inset 0 0 20px rgba(0, 170, 255, 0.1); }
+      50% { box-shadow: 0 0 40px var(--blue-glow), inset 0 0 25px rgba(0, 170, 255, 0.2); }
+    }
+
+    .welcome-notice .n-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      animation: bounceEmoji 1.8s ease-in-out infinite;
+    }
+
+    .welcome-notice .n-text {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.6;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .welcome-notice .n-text .hl {
+      color: var(--blue-1);
+      text-shadow: 0 0 12px var(--blue-glow);
+      font-weight: 900;
+    }
+
+    .welcome-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      background: #ffffff;
+      color: #003d73;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 35px rgba(255, 255, 255, 0.4);
+      transition: transform 0.2s var(--ease-bounce), box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.4), transparent);
+      animation: shine 2.5s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      50%, 100% { left: 100%; }
+    }
+
+    .welcome-btn:hover {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 55px rgba(255, 255, 255, 0.6);
+    }
+
+    .welcome-btn:active { transform: scale(0.96); }
+
     /* ═════ البطاقة الرئيسية ═════ */
     .container {
       max-width: 450px;
       width: 100%;
       background: var(--gradient-flow);
       background-size: 200% 200%;
-      animation: colorFlow 8s ease infinite;
+      animation: colorFlow 8s ease infinite, containerIn 0.9s var(--ease-soft);
       border-radius: var(--radius-xl);
       padding: 26px 22px 22px;
       border: 2px solid var(--blue-neon);
@@ -142,11 +333,9 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.35);
       position: relative;
       z-index: 1;
-      animation: colorFlow 8s ease infinite, containerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
     }
 
-    /* خط علوي أبيض متوهج */
     .container::before {
       content: '';
       position: absolute;
@@ -157,21 +346,23 @@
       pointer-events: none;
     }
 
-    @keyframes colorFlow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
     @keyframes containerIn {
       from { opacity: 0; transform: translateY(30px) scale(0.95); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ═════ أيقونة التحذير (أزرق بدل أحمر) ═════ */
+    /* ═════ أيقونة التحذير ═════ */
     .warn-icon {
       display: flex;
       justify-content: center;
       margin-bottom: 10px;
+      animation: warnEntrance 1s var(--ease-bounce) both;
+    }
+
+    @keyframes warnEntrance {
+      0% { opacity: 0; transform: scale(0.5) rotate(-30deg); }
+      60% { opacity: 1; transform: scale(1.1) rotate(5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
     }
 
     .warn-icon svg {
@@ -192,6 +383,7 @@
       padding-bottom: 14px;
       margin-bottom: 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      animation: fadeDown 0.8s var(--ease-soft) 0.1s both;
     }
 
     .header h1 {
@@ -222,6 +414,7 @@
       border: 1.5px solid rgba(0, 200, 255, 0.3);
       min-height: 60px;
       padding: 6px;
+      transition: all 0.4s var(--ease-soft);
     }
 
     /* ═════ صندوق الحالة ═════ */
@@ -236,7 +429,8 @@
       gap: 12px;
       text-align: right;
       backdrop-filter: blur(8px);
-      transition: all 0.4s ease;
+      transition: all 0.5s var(--ease-soft);
+      animation: fadeDown 0.8s var(--ease-soft) 0.2s both;
     }
 
     body.lang-en .status-box { text-align: left; }
@@ -289,6 +483,7 @@
       align-items: center;
       margin-bottom: 10px;
       padding: 0 4px;
+      animation: fadeDown 0.8s var(--ease-soft) 0.3s both;
     }
 
     .stats-title {
@@ -307,10 +502,10 @@
       font-weight: 800;
       cursor: pointer;
       border: 1.5px solid rgba(0, 200, 255, 0.5);
-      transition: 0.2s;
+      transition: all 0.3s var(--ease-soft);
     }
 
-    .refresh-badge:hover { background: rgba(0, 60, 130, 0.6); }
+    .refresh-badge:hover { background: rgba(0, 60, 130, 0.6); transform: translateY(-2px); }
     .refresh-badge:active { transform: scale(0.95); }
 
     /* ═════ شبكة الإحصائيات ═════ */
@@ -328,12 +523,29 @@
       border: 1.5px solid rgba(0, 200, 255, 0.35);
       text-align: center;
       backdrop-filter: blur(8px);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.5s var(--ease-soft);
       position: relative;
       overflow: hidden;
+      animation: cardPop 0.9s var(--ease-bounce) both;
     }
 
-    .stat-card .icon { font-size: 24px; margin-bottom: 4px; display: inline-block; }
+    .stat-card:nth-child(1) { animation-delay: 0.4s; }
+    .stat-card:nth-child(2) { animation-delay: 0.5s; }
+
+    @keyframes cardPop {
+      0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--blue-1);
+      box-shadow: 0 10px 30px rgba(0, 170, 255, 0.25);
+    }
+
+    .stat-card .icon { font-size: 24px; margin-bottom: 4px; display: inline-block; transition: transform 0.4s var(--ease-bounce); }
+
+    .stat-card:hover .icon { transform: scale(1.15) rotate(-5deg); }
 
     .stat-card .num {
       font-size: 25px;
@@ -341,7 +553,7 @@
       color: #fff;
       letter-spacing: -0.5px;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s ease;
+      transition: all 0.4s var(--ease-soft);
     }
 
     .stat-card .label {
@@ -360,25 +572,25 @@
       display: inline-block;
       background: rgba(255, 255, 255, 0.15);
       color: rgba(255, 255, 255, 0.9);
-      transition: all 0.3s ease;
+      transition: all 0.5s var(--ease-soft);
     }
 
     .stat-card.increased {
       background: rgba(0, 40, 90, 0.6);
       border-color: var(--blue-neon);
       box-shadow: 0 0 35px var(--blue-glow), inset 0 0 25px rgba(0, 170, 255, 0.2);
-      transform: translateY(-3px);
+      transform: translateY(-3px) scale(1.02);
     }
 
     .stat-card.increased .num {
       color: var(--blue-1);
       text-shadow: 0 0 25px var(--blue-glow);
-      animation: popNumber 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: popNumber 0.6s var(--ease-bounce);
     }
 
     @keyframes popNumber {
       0% { transform: scale(1); }
-      50% { transform: scale(1.25); }
+      50% { transform: scale(1.3); }
       100% { transform: scale(1); }
     }
 
@@ -408,10 +620,20 @@
       border-radius: var(--radius-md);
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       text-align: right;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.5s var(--ease-soft);
       backdrop-filter: blur(6px);
       position: relative;
       overflow: hidden;
+      animation: slideIn 0.9s var(--ease-soft) both;
+    }
+
+    .step-item:nth-child(1) { animation-delay: 0.5s; }
+    .step-item:nth-child(2) { animation-delay: 0.6s; }
+    .step-item:nth-child(3) { animation-delay: 0.7s; }
+
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateX(30px); }
+      100% { opacity: 1; transform: translateX(0); }
     }
 
     body.lang-en .step-item { text-align: left; }
@@ -429,7 +651,7 @@
       background: rgba(0, 0, 0, 0.5);
       color: rgba(255, 255, 255, 0.75);
       border: 1.5px solid rgba(255, 255, 255, 0.35);
-      transition: all 0.4s ease;
+      transition: all 0.5s var(--ease-bounce);
       position: relative;
     }
 
@@ -453,6 +675,7 @@
       border-color: var(--blue-neon);
       background: rgba(0, 50, 110, 0.5);
       box-shadow: 0 0 25px var(--blue-glow);
+      transform: translateX(-3px);
     }
 
     .step-item.active .num {
@@ -467,7 +690,7 @@
 
     @keyframes pulseNum {
       0%, 100% { transform: scale(1); box-shadow: 0 0 22px var(--blue-glow); }
-      50% { transform: scale(1.1); box-shadow: 0 0 35px var(--blue-glow); }
+      50% { transform: scale(1.15); box-shadow: 0 0 35px var(--blue-glow); }
     }
 
     .step-item.done {
@@ -492,13 +715,13 @@
       font-size: 16px;
       font-weight: 900;
       color: #002a4d;
-      animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: checkPop 0.5s var(--ease-bounce);
     }
 
     @keyframes checkPop {
-      0% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1.4); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      60% { transform: scale(1.4) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
     }
 
     .step-item.done .txt { color: var(--blue-1); }
@@ -519,19 +742,25 @@
       gap: 9px;
       margin-top: 10px;
       font-family: inherit;
-      transition: transform 0.15s ease, box-shadow 0.3s ease, opacity 0.2s;
+      transition: transform 0.25s var(--ease-bounce), box-shadow 0.4s var(--ease-soft), opacity 0.3s;
       position: relative;
       overflow: hidden;
       letter-spacing: 0.2px;
+      animation: fadeUp 0.9s var(--ease-soft) both;
     }
 
-    .btn:active { transform: scale(0.97); }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-    /* الزر الأساسي: فتح يوتيوب - أزرق فاتح */
+    .btn:active { transform: scale(0.96); }
+
+    /* الزر الأساسي: فتح يوتيوب */
     .btn-primary {
       background: linear-gradient(135deg, #00d4ff, #0090e0, #0066b3);
       background-size: 200% 200%;
-      animation: colorFlow 4s ease infinite;
+      animation: colorFlow 4s ease infinite, fadeUp 0.9s var(--ease-soft) 0.75s both;
       color: #ffffff;
       font-weight: 900;
       box-shadow:
@@ -542,6 +771,17 @@
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      animation: shine 3.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
     .btn-primary:hover {
       box-shadow:
         0 10px 30px rgba(0, 150, 255, 0.6),
@@ -549,7 +789,7 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
-    /* زر التحقق: أزرق داكن + إطار نيون واضح */
+    /* زر التحقق */
     .btn-verify {
       background: linear-gradient(135deg, #003d73, #001a33);
       color: var(--blue-1);
@@ -560,13 +800,17 @@
         inset 0 0 25px rgba(0, 170, 255, 0.15);
       text-shadow: 0 0 12px var(--blue-glow);
       letter-spacing: 0.5px;
+      animation: colorFlow 5s ease infinite, fadeUp 0.9s var(--ease-soft) 0.85s both;
+      background-size: 200% 200%;
     }
 
-    .btn-verify:hover {
+    .btn-verify:hover:not(:disabled) {
       background: linear-gradient(135deg, #005bb3, #002a4d);
+      background-size: 200% 200%;
       box-shadow:
         0 0 35px var(--blue-glow),
         inset 0 0 30px rgba(0, 170, 255, 0.25);
+      transform: translateY(-2px);
     }
 
     .btn-verify:disabled,
@@ -578,21 +822,23 @@
       box-shadow: none;
     }
 
-    /* زر الرجوع: أبيض شفاف */
+    /* زر الرجوع */
     .btn-back {
       background: rgba(255, 255, 255, 0.1);
       color: #ffffff;
       border: 1.5px solid rgba(255, 255, 255, 0.35);
       font-weight: 700;
+      animation: fadeUp 0.9s var(--ease-soft) 0.95s both;
     }
 
     .btn-back:hover {
       background: rgba(255, 255, 255, 0.18);
       box-shadow: 0 0 18px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
-    /* زر الذهاب: أزرق متوهج */
-    .go-box { margin: 14px 0 6px; display: none; animation: containerIn 0.5s ease; }
+    /* زر الذهاب */
+    .go-box { margin: 14px 0 6px; display: none; animation: containerIn 0.7s var(--ease-bounce); }
 
     .go-btn {
       width: 100%;
@@ -613,6 +859,7 @@
       border: 2px solid rgba(255, 255, 255, 0.4);
       font-family: inherit;
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s var(--ease-bounce);
     }
 
     .go-btn:active { transform: scale(0.97); }
@@ -622,7 +869,7 @@
       50% { box-shadow: 0 10px 40px rgba(0, 150, 255, 0.7), 0 0 65px var(--blue-glow); }
     }
 
-    /* ═════ زر الموقع الرسمي (أسفل البطاقة) ═════ */
+    /* ═════ زر الموقع الرسمي ═════ */
     .official-btn {
       display: flex;
       align-items: center;
@@ -638,13 +885,13 @@
       color: #ffffff;
       background: linear-gradient(135deg, rgba(0, 100, 200, 0.9), rgba(0, 40, 90, 0.9));
       background-size: 200% 200%;
-      animation: colorFlow 5s ease infinite;
+      animation: colorFlow 5s ease infinite, fadeUp 0.9s var(--ease-soft) 1.05s both;
       border: 2px solid var(--blue-1);
       box-shadow:
         0 0 25px var(--blue-glow),
         0 8px 24px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      transition: transform 0.2s ease;
+      transition: transform 0.25s var(--ease-bounce);
       font-family: 'Tajawal', sans-serif;
       position: relative;
       overflow: hidden;
@@ -660,11 +907,6 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
       animation: shine 3s ease-in-out infinite;
       pointer-events: none;
-    }
-
-    @keyframes shine {
-      0% { left: -100%; }
-      50%, 100% { left: 100%; }
     }
 
     .official-btn:hover { transform: translateY(-2px); }
@@ -698,6 +940,7 @@
       z-index: 9999;
       flex-direction: column;
       gap: 16px;
+      animation: fadeIn 0.4s ease;
     }
 
     .loader.show { display: flex; }
@@ -742,7 +985,7 @@
       font-weight: 800;
       z-index: 10000;
       opacity: 0;
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease;
+      transition: transform 0.5s var(--ease-bounce), opacity 0.4s ease;
       pointer-events: none;
       text-align: center;
       max-width: 90%;
@@ -766,6 +1009,9 @@
       .go-btn { font-size: 15px; padding: 16px; }
       .official-btn { font-size: 13px; padding: 13px 16px; }
       .lang-btn { padding: 6px 10px; font-size: 10px; }
+      .welcome-emoji { font-size: 56px; }
+      .welcome-title { font-size: 20px; }
+      .welcome-text { font-size: 14px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -774,6 +1020,32 @@
   </style>
 </head>
 <body>
+
+  <!-- ═══════════════════════════════════════════════
+       💬 رسالة الترحيب (بداية حلوة)
+       ═══════════════════════════════════════════════ -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-card">
+      <span class="welcome-emoji">👋</span>
+      <div class="welcome-title" data-i18n="welcome_title">أهلاً بك صديقي 💙</div>
+      <div class="welcome-text" data-i18n="welcome_text">
+        وصلت إلى صفحة فتح الرابط الذكي. قبل أن نكمل، لدينا شرط صغير مهم جداً.
+      </div>
+
+      <!-- ⚠️ رسالة الشرط الأساسي -->
+      <div class="welcome-notice">
+        <div class="n-icon">⚠️</div>
+        <div class="n-text" data-i18n="welcome_notice">
+          <span class="hl">يجب إضافة لايك أو تعليق</span> على الفيديو حتى يفتح معك الرابط الأساسي بنجاح
+        </div>
+      </div>
+
+      <button class="welcome-btn" id="welcomeStart">
+        <span>🚀</span>
+        <span data-i18n="welcome_btn">فهمت، هيا نبدأ</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ═════ زر تبديل اللغة ═════ -->
   <div class="lang-toggle">
@@ -784,7 +1056,6 @@
   <!-- ═════ البطاقة الرئيسية ═════ -->
   <div class="container">
 
-    <!-- أيقونة التحذير (أزرق) -->
     <div class="warn-icon">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2L1 21h22L12 2z" stroke="#00c8ff" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
@@ -793,7 +1064,6 @@
       </svg>
     </div>
 
-    <!-- الترويسة -->
     <div class="header">
       <h1 id="headerTitle">فتح الرابط الذكي</h1>
       <div class="sub" id="headerSub">تفاعل مع الفيديو لفتح القفل</div>
@@ -813,7 +1083,6 @@
       <script src="https://www.highrevenueformat.com/bba1284ed30ea5781eb25d88ffec21d5/invoke.js"></script>
     </div>
 
-    <!-- صندوق الحالة -->
     <div class="status-box" id="statusBox">
       <span class="icon" id="sIcon">🔒</span>
       <div class="text">
@@ -822,13 +1091,11 @@
       </div>
     </div>
 
-    <!-- رأس الإحصائيات -->
     <div class="stats-header">
       <span class="stats-title" data-i18n="stats_title">📊 إحصائيات الفيديو</span>
       <span class="refresh-badge" id="quickRefreshBtn" data-i18n="refresh">🔄 تحديث</span>
     </div>
 
-    <!-- شبكة الإحصائيات -->
     <div class="stats-grid">
       <div class="stat-card" id="likeCard">
         <div class="icon">👍</div>
@@ -844,7 +1111,6 @@
       </div>
     </div>
 
-    <!-- الخطوات -->
     <div class="steps">
       <div class="step-item" id="step1">
         <span class="num">1</span>
@@ -869,7 +1135,6 @@
       </div>
     </div>
 
-    <!-- الأزرار -->
     <button class="btn btn-primary" id="openBtn" data-i18n="btn_open_yt">▶️ فتح يوتيوب وإضافة تفاعل</button>
     <button class="btn btn-verify" disabled id="checkBtn" data-i18n="btn_check">🔍 تحقق من إضافة اللايك / التعليق</button>
 
@@ -879,14 +1144,12 @@
 
     <button class="btn btn-back" id="backBtn" data-i18n="btn_back">↩️ رجوع</button>
 
-    <!-- 🟦 زر الموقع الرسمي (جديد) -->
     <a class="official-btn" href="https://oali79298-hub.github.io/Link-aktubar-/" target="_blank" rel="noopener">
       <span class="dot"></span>
       <span data-i18n="official_site">🏠 الموقع الرسمي</span>
       <span>←</span>
     </a>
 
-    <!-- 🟥 إعلان سفلي -->
     <div class="ad-slot">
       <script async="async" data-cfasync="false" src="https://pl29581573.profitableratecpmnetwork.com/272c44df2e38e34bc16b9f80978efab2/invoke.js"></script>
       <div id="container-272c44df2e38e34bc16b9f80978efab2"></div>
@@ -906,6 +1169,10 @@
     // ═══════════════════════════════════════════════
     const I18N = {
       ar: {
+        welcome_title: 'أهلاً بك صديقي 💙',
+        welcome_text: 'وصلت إلى صفحة فتح الرابط الذكي. قبل أن نكمل، لدينا شرط صغير مهم جداً.',
+        welcome_notice: '<span class="hl">يجب إضافة لايك أو تعليق</span> على الفيديو حتى يفتح معك الرابط الأساسي بنجاح',
+        welcome_btn: 'فهمت، هيا نبدأ',
         headerTitle: 'فتح الرابط الذكي',
         headerSub: 'تفاعل مع الفيديو لفتح القفل',
         checking_link: 'جاري فحص الرابط',
@@ -949,6 +1216,10 @@
         toast_success: '🎉 ممتاز! تم فتح القفل بنجاح'
       },
       en: {
+        welcome_title: 'Welcome, my friend 💙',
+        welcome_text: 'You have reached the Smart Link Unlock page. Before we continue, we have a small but important rule.',
+        welcome_notice: '<span class="hl">You must add a like or a comment</span> on the video so the main link can be unlocked for you',
+        welcome_btn: 'Got it, let\'s start',
         headerTitle: 'Smart Link Unlock',
         headerSub: 'Interact with video to unlock',
         checking_link: 'Checking link',
@@ -1007,7 +1278,14 @@
 
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (I18N[lang][key]) el.textContent = I18N[lang][key];
+        if (I18N[lang][key]) {
+          // دعم HTML في النصوص
+          if (key === 'welcome_notice') {
+            el.innerHTML = I18N[lang][key];
+          } else {
+            el.textContent = I18N[lang][key];
+          }
+        }
       });
 
       document.getElementById('headerTitle').textContent = t('headerTitle');
@@ -1039,6 +1317,19 @@
       if (saved === 'en') currentLang = 'en';
     } catch (e) {}
     applyLanguage(currentLang);
+
+    // ═══════════════════════════════════════════════
+    // 💬 إغلاق رسالة الترحيب
+    // ═══════════════════════════════════════════════
+    document.getElementById('welcomeStart').addEventListener('click', () => {
+      const overlay = document.getElementById('welcomeOverlay');
+      overlay.classList.add('hide');
+      // بعد اختفاء الرسالة، أظهر المحتوى بسلاسة
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 700);
+      if (navigator.vibrate) navigator.vibrate(30);
+    });
 
     // ═══════════════════════════════════════════════
     // 🛡️ الحماية من يوتيوب
@@ -1201,9 +1492,6 @@
       return { likes: 0, comments: 0 };
     }
 
-    // ═══════════════════════════════════════════════
-    // تحميل البيانات
-    // ═══════════════════════════════════════════════
     const urlParams = new URLSearchParams(window.location.search);
     code = urlParams.get('id');
 
@@ -1324,7 +1612,7 @@
 
     $('backBtn').onclick = () => window.history.back();
 
-    console.log('🔷 Smart Link — Blue Design + Bilingual AR/EN');
+    console.log('🔷 Smart Link — Blue Design + Welcome + Smooth Animations');
   </script>
 </body>
 </html>
