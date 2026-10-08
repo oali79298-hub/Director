@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
-  <meta name="theme-color" content="#002a2a">
+  <meta name="theme-color" content="#050a1a">
   <title>🔓 فتح الرابط الذكي</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -13,17 +13,24 @@
 
   <style>
     :root {
-      --teal-1: #00f0d0;
-      --teal-2: #00c9b7;
-      --teal-3: #009d9a;
-      --teal-4: #007a7a;
-      --neon: #00ff9d;
-      --neon-glow: rgba(0, 255, 157, 0.6);
-      --red: #ff2222;
+      /* 🎨 لوحة الألوان الجديدة: أزرق + أسود + أبيض */
+      --blue-1: #00c8ff;
+      --blue-2: #0090e0;
+      --blue-3: #0066b3;
+      --blue-4: #003d73;
+      --blue-5: #001a33;
+      --blue-neon: #00aaff;
+      --blue-glow: rgba(0, 170, 255, 0.6);
+      --blue-soft: rgba(0, 170, 255, 0.15);
+      --white: #ffffff;
+      --white-glow: rgba(255, 255, 255, 0.4);
+      --red: #ff3d5a;
       --text: #ffffff;
       --radius-xl: 32px;
       --radius-lg: 22px;
       --radius-md: 16px;
+      --gradient: linear-gradient(160deg, #00c8ff 0%, #0090e0 25%, #0066b3 55%, #003d73 100%);
+      --gradient-flow: linear-gradient(160deg, #00c8ff 0%, #0077d4 30%, #003d73 65%, #001a33 100%);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,10 +41,11 @@
       font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       min-height: 100dvh;
-      background: #030a0a;
+      background: #02060e;
       background-image:
-        radial-gradient(circle at 20% 10%, rgba(0, 255, 200, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 90%, rgba(0, 200, 255, 0.12) 0%, transparent 50%);
+        radial-gradient(circle at 20% 10%, rgba(0, 170, 255, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 80% 90%, rgba(0, 100, 200, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 60, 130, 0.1) 0%, transparent 65%);
       background-attachment: fixed;
       display: flex;
       justify-content: center;
@@ -62,19 +70,19 @@
       animation: floatBg 15s ease-in-out infinite;
     }
     body::before {
-      width: 380px; height: 380px;
-      background: rgba(0, 240, 208, 0.22);
+      width: 400px; height: 400px;
+      background: rgba(0, 200, 255, 0.22);
       top: -100px; right: -100px;
     }
     body::after {
-      width: 450px; height: 450px;
-      background: rgba(0, 200, 255, 0.18);
+      width: 480px; height: 480px;
+      background: rgba(0, 100, 220, 0.20);
       bottom: -140px; left: -140px;
       animation-delay: -7s;
     }
     @keyframes floatBg {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, -40px) scale(1.15); }
+      50% { transform: translate(45px, -45px) scale(1.15); }
     }
 
     /* ═════ زر تبديل اللغة ═════ */
@@ -84,13 +92,13 @@
       left: max(14px, env(safe-area-inset-left));
       z-index: 9999;
       display: flex;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1.5px solid var(--neon);
+      border: 2px solid var(--blue-neon);
       border-radius: 30px;
       padding: 3px;
-      box-shadow: 0 0 22px var(--neon-glow), 0 8px 24px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 25px var(--blue-glow), 0 8px 24px rgba(0, 0, 0, 0.6);
       overflow: hidden;
     }
 
@@ -111,31 +119,42 @@
     }
 
     .lang-btn.active {
-      background: linear-gradient(135deg, var(--teal-1), var(--teal-3));
-      color: #002a2a;
-      box-shadow: 0 0 14px var(--neon-glow);
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 0 16px var(--blue-glow);
     }
 
-    /* ═════ البطاقة الرئيسية (مطابقة للصورة) ═════ */
+    /* ═════ البطاقة الرئيسية ═════ */
     .container {
-      max-width: 440px;
+      max-width: 450px;
       width: 100%;
-      background: linear-gradient(160deg, #00f0d0 0%, #00c9b7 22%, #009d9a 50%, #007a7a 100%);
+      background: var(--gradient-flow);
       background-size: 200% 200%;
       animation: colorFlow 8s ease infinite;
       border-radius: var(--radius-xl);
       padding: 26px 22px 22px;
-      border: 2px solid var(--neon);
+      border: 2px solid var(--blue-neon);
       box-shadow:
-        0 0 0 1px rgba(0, 255, 200, 0.2),
-        0 0 40px rgba(0, 255, 180, 0.35),
-        0 0 80px rgba(0, 255, 180, 0.15),
-        0 24px 60px rgba(0, 0, 0, 0.7),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        0 0 0 1px rgba(0, 200, 255, 0.25),
+        0 0 45px rgba(0, 170, 255, 0.4),
+        0 0 90px rgba(0, 100, 220, 0.2),
+        0 24px 60px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
       position: relative;
       z-index: 1;
       animation: colorFlow 8s ease infinite, containerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+    }
+
+    /* خط علوي أبيض متوهج */
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+      pointer-events: none;
     }
 
     @keyframes colorFlow {
@@ -148,7 +167,7 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ═════ أيقونة التحذير ═════ */
+    /* ═════ أيقونة التحذير (أزرق بدل أحمر) ═════ */
     .warn-icon {
       display: flex;
       justify-content: center;
@@ -156,9 +175,9 @@
     }
 
     .warn-icon svg {
-      width: 62px;
-      height: 62px;
-      filter: drop-shadow(0 0 14px rgba(255, 0, 0, 0.7));
+      width: 64px;
+      height: 64px;
+      filter: drop-shadow(0 0 16px rgba(0, 170, 255, 0.8));
       animation: warnPulse 2s ease-in-out infinite;
     }
 
@@ -176,17 +195,17 @@
     }
 
     .header h1 {
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 900;
       color: #ffffff;
       letter-spacing: -0.3px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
       margin-bottom: 3px;
     }
 
     .header .sub {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.85);
       font-weight: 500;
     }
 
@@ -199,19 +218,19 @@
       align-items: center;
       border-radius: var(--radius-md);
       overflow: hidden;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1.5px solid rgba(0, 200, 255, 0.3);
       min-height: 60px;
       padding: 6px;
     }
 
-    /* ═════ صندوق الحالة (بستايل قائمة القوانين) ═════ */
+    /* ═════ صندوق الحالة ═════ */
     .status-box {
-      background: rgba(0, 0, 0, 0.22);
+      background: rgba(0, 0, 0, 0.3);
       border-radius: var(--radius-lg);
       padding: 14px 16px;
       margin-bottom: 14px;
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border: 1.5px solid rgba(0, 200, 255, 0.4);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -223,15 +242,15 @@
     body.lang-en .status-box { text-align: left; }
 
     .status-box.ok {
-      border-color: rgba(34, 229, 132, 0.6);
-      background: rgba(0, 0, 0, 0.35);
-      box-shadow: 0 0 25px rgba(34, 229, 132, 0.4);
+      border-color: rgba(0, 200, 255, 0.8);
+      background: rgba(0, 50, 100, 0.4);
+      box-shadow: 0 0 28px var(--blue-glow);
     }
 
     .status-box.err {
-      border-color: rgba(255, 71, 87, 0.6);
-      background: rgba(0, 0, 0, 0.35);
-      box-shadow: 0 0 25px rgba(255, 71, 87, 0.4);
+      border-color: rgba(255, 61, 90, 0.7);
+      background: rgba(60, 0, 20, 0.4);
+      box-shadow: 0 0 25px rgba(255, 61, 90, 0.5);
     }
 
     .status-box .icon {
@@ -253,7 +272,7 @@
       font-weight: 800;
       color: #fff;
       margin-bottom: 2px;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     .status-box .text .desc {
@@ -276,22 +295,22 @@
       font-size: 13px;
       font-weight: 800;
       color: #fff;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     .refresh-badge {
       font-size: 11px;
       color: #fff;
-      background: rgba(0, 0, 0, 0.28);
-      padding: 5px 11px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 12px;
       border-radius: 20px;
       font-weight: 800;
       cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      border: 1.5px solid rgba(0, 200, 255, 0.5);
       transition: 0.2s;
     }
 
-    .refresh-badge:hover { background: rgba(0, 0, 0, 0.45); }
+    .refresh-badge:hover { background: rgba(0, 60, 130, 0.6); }
     .refresh-badge:active { transform: scale(0.95); }
 
     /* ═════ شبكة الإحصائيات ═════ */
@@ -303,10 +322,10 @@
     }
 
     .stat-card {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.35);
       border-radius: var(--radius-lg);
       padding: 14px 10px;
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border: 1.5px solid rgba(0, 200, 255, 0.35);
       text-align: center;
       backdrop-filter: blur(8px);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -321,13 +340,13 @@
       font-weight: 900;
       color: #fff;
       letter-spacing: -0.5px;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       transition: all 0.3s ease;
     }
 
     .stat-card .label {
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.85);
       margin-top: 3px;
       font-weight: 600;
     }
@@ -340,20 +359,20 @@
       border-radius: 12px;
       display: inline-block;
       background: rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.9);
       transition: all 0.3s ease;
     }
 
     .stat-card.increased {
-      background: rgba(0, 0, 0, 0.45);
-      border-color: var(--neon);
-      box-shadow: 0 0 30px var(--neon-glow), inset 0 0 20px rgba(0, 255, 157, 0.15);
+      background: rgba(0, 40, 90, 0.6);
+      border-color: var(--blue-neon);
+      box-shadow: 0 0 35px var(--blue-glow), inset 0 0 25px rgba(0, 170, 255, 0.2);
       transform: translateY(-3px);
     }
 
     .stat-card.increased .num {
-      color: var(--neon);
-      text-shadow: 0 0 20px var(--neon-glow);
+      color: var(--blue-1);
+      text-shadow: 0 0 25px var(--blue-glow);
       animation: popNumber 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -364,15 +383,15 @@
     }
 
     .stat-card.increased .tag {
-      background: var(--neon);
-      color: #003d1f;
+      background: var(--blue-1);
+      color: #002a4d;
       font-weight: 900;
-      box-shadow: 0 0 15px var(--neon-glow);
+      box-shadow: 0 0 18px var(--blue-glow);
     }
 
     .stat-card.increased .icon { animation: bounceEmoji 1s ease-in-out infinite; }
 
-    /* ═════ الخطوات (مثل قائمة القوانين) ═════ */
+    /* ═════ الخطوات ═════ */
     .steps {
       display: flex;
       flex-direction: column;
@@ -385,7 +404,7 @@
       align-items: center;
       gap: 12px;
       padding: 12px 14px;
-      background: rgba(0, 0, 0, 0.18);
+      background: rgba(0, 0, 0, 0.28);
       border-radius: var(--radius-md);
       border: 1.5px solid rgba(255, 255, 255, 0.25);
       text-align: right;
@@ -407,9 +426,9 @@
       font-size: 14px;
       font-weight: 900;
       flex-shrink: 0;
-      background: rgba(0, 0, 0, 0.4);
-      color: rgba(255, 255, 255, 0.7);
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
       transition: all 0.4s ease;
       position: relative;
     }
@@ -419,7 +438,7 @@
       color: #fff;
       font-weight: 700;
       flex: 1;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     .step-item .txt small {
@@ -431,36 +450,36 @@
     }
 
     .step-item.active {
-      border-color: var(--neon);
-      background: rgba(0, 0, 0, 0.35);
-      box-shadow: 0 0 22px var(--neon-glow);
+      border-color: var(--blue-neon);
+      background: rgba(0, 50, 110, 0.5);
+      box-shadow: 0 0 25px var(--blue-glow);
     }
 
     .step-item.active .num {
-      background: var(--neon);
-      color: #003d1f;
+      background: var(--blue-1);
+      color: #002a4d;
       border-color: transparent;
-      box-shadow: 0 0 20px var(--neon-glow);
+      box-shadow: 0 0 22px var(--blue-glow);
       animation: pulseNum 1.8s ease-in-out infinite;
     }
 
-    .step-item.active .txt { color: var(--neon); }
+    .step-item.active .txt { color: var(--blue-1); }
 
     @keyframes pulseNum {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--neon-glow); }
-      50% { transform: scale(1.1); box-shadow: 0 0 32px var(--neon-glow); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 22px var(--blue-glow); }
+      50% { transform: scale(1.1); box-shadow: 0 0 35px var(--blue-glow); }
     }
 
     .step-item.done {
-      border-color: var(--neon);
-      background: rgba(0, 0, 0, 0.4);
+      border-color: var(--blue-1);
+      background: rgba(0, 60, 130, 0.55);
     }
 
     .step-item.done .num {
-      background: var(--neon);
+      background: var(--blue-1);
       color: transparent;
       border-color: transparent;
-      box-shadow: 0 0 15px var(--neon-glow);
+      box-shadow: 0 0 18px var(--blue-glow);
     }
 
     .step-item.done .num::after {
@@ -470,9 +489,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 900;
-      color: #003d1f;
+      color: #002a4d;
       animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -482,13 +501,13 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    .step-item.done .txt { color: var(--neon); }
-    .step-item.done .txt small { color: rgba(0, 255, 157, 0.7); }
+    .step-item.done .txt { color: var(--blue-1); }
+    .step-item.done .txt small { color: rgba(0, 200, 255, 0.8); }
 
-    /* ═════ الأزرار (بستايل الصورة) ═════ */
+    /* ═════ الأزرار ═════ */
     .btn {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       border: none;
       border-radius: var(--radius-md);
       font-size: 15px;
@@ -503,46 +522,76 @@
       transition: transform 0.15s ease, box-shadow 0.3s ease, opacity 0.2s;
       position: relative;
       overflow: hidden;
+      letter-spacing: 0.2px;
     }
 
     .btn:active { transform: scale(0.97); }
 
-    /* زر أبيض (مثل "Got it" في الصورة) */
-    .btn-white {
-      background: #ffffff;
-      color: #002a2a;
+    /* الزر الأساسي: فتح يوتيوب - أزرق فاتح */
+    .btn-primary {
+      background: linear-gradient(135deg, #00d4ff, #0090e0, #0066b3);
+      background-size: 200% 200%;
+      animation: colorFlow 4s ease infinite;
+      color: #ffffff;
       font-weight: 900;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 255, 157, 0.35);
-      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      box-shadow:
+        0 8px 24px rgba(0, 150, 255, 0.45),
+        0 0 30px var(--blue-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
-    .btn-white:hover {
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4), 0 0 45px rgba(0, 255, 157, 0.55);
+    .btn-primary:hover {
+      box-shadow:
+        0 10px 30px rgba(0, 150, 255, 0.6),
+        0 0 45px var(--blue-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
-    /* زر شفاف (مثل "Remind me later") */
-    .btn-transparent {
-      background: rgba(0, 0, 0, 0.25);
-      color: var(--neon);
-      border: 1.5px solid rgba(0, 255, 157, 0.6);
-      backdrop-filter: blur(6px);
-      text-shadow: 0 0 8px var(--neon-glow);
+    /* زر التحقق: أزرق داكن + إطار نيون واضح */
+    .btn-verify {
+      background: linear-gradient(135deg, #003d73, #001a33);
+      color: var(--blue-1);
+      font-weight: 900;
+      border: 2.5px solid var(--blue-1);
+      box-shadow:
+        0 0 25px var(--blue-glow),
+        inset 0 0 25px rgba(0, 170, 255, 0.15);
+      text-shadow: 0 0 12px var(--blue-glow);
+      letter-spacing: 0.5px;
     }
 
-    .btn-transparent:hover {
-      background: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 22px var(--neon-glow);
+    .btn-verify:hover {
+      background: linear-gradient(135deg, #005bb3, #002a4d);
+      box-shadow:
+        0 0 35px var(--blue-glow),
+        inset 0 0 30px rgba(0, 170, 255, 0.25);
     }
 
-    .btn-transparent:disabled,
-    .btn-white:disabled {
-      opacity: 0.4;
+    .btn-verify:disabled,
+    .btn-primary:disabled {
+      opacity: 0.35;
       cursor: not-allowed;
       transform: none !important;
+      animation: none;
       box-shadow: none;
     }
 
-    /* زر الذهاب (تدرج ذهبي/بنفسجي) */
+    /* زر الرجوع: أبيض شفاف */
+    .btn-back {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      font-weight: 700;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.2);
+    }
+
+    /* زر الذهاب: أزرق متوهج */
     .go-box { margin: 14px 0 6px; display: none; animation: containerIn 0.5s ease; }
 
     .go-btn {
@@ -557,27 +606,90 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background: linear-gradient(135deg, #ffb020, #ff6b00, #ff4ecd);
+      background: linear-gradient(135deg, #00d4ff, #0088ff, #0044cc);
       background-size: 200% 200%;
       animation: colorFlow 3s ease infinite, pulseGlow 2s ease-in-out infinite;
       color: #fff;
-      box-shadow: 0 10px 30px rgba(255, 176, 32, 0.4), 0 0 45px rgba(255, 107, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.4);
       font-family: inherit;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
 
     .go-btn:active { transform: scale(0.97); }
 
     @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 10px 30px rgba(255, 176, 32, 0.4), 0 0 45px rgba(255, 107, 0, 0.35); }
-      50% { box-shadow: 0 10px 40px rgba(255, 176, 32, 0.6), 0 0 65px rgba(255, 107, 0, 0.5); }
+      0%, 100% { box-shadow: 0 10px 30px rgba(0, 150, 255, 0.5), 0 0 45px var(--blue-glow); }
+      50% { box-shadow: 0 10px 40px rgba(0, 150, 255, 0.7), 0 0 65px var(--blue-glow); }
+    }
+
+    /* ═════ زر الموقع الرسمي (أسفل البطاقة) ═════ */
+    .official-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(0, 100, 200, 0.9), rgba(0, 40, 90, 0.9));
+      background-size: 200% 200%;
+      animation: colorFlow 5s ease infinite;
+      border: 2px solid var(--blue-1);
+      box-shadow:
+        0 0 25px var(--blue-glow),
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: transform 0.2s ease;
+      font-family: 'Tajawal', sans-serif;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .official-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      animation: shine 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      50%, 100% { left: 100%; }
+    }
+
+    .official-btn:hover { transform: translateY(-2px); }
+    .official-btn:active { transform: scale(0.97); }
+
+    .official-btn .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--blue-1);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--blue-1);
+      animation: pulse 1.6s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
     }
 
     /* ═════ المحمّل ═════ */
     .loader {
       position: fixed;
       inset: 0;
-      background: rgba(3, 10, 10, 0.85);
+      background: rgba(2, 6, 14, 0.88);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       display: none;
@@ -591,13 +703,14 @@
     .loader.show { display: flex; }
 
     .loader .sp {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(0, 255, 200, 0.15);
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0, 200, 255, 0.15);
       border-radius: 50%;
-      border-top-color: var(--neon);
+      border-top-color: var(--blue-1);
+      border-right-color: var(--blue-neon);
       animation: spin 0.7s linear infinite;
-      box-shadow: 0 0 25px var(--neon-glow);
+      box-shadow: 0 0 30px var(--blue-glow);
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -620,10 +733,10 @@
       top: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(-140px);
-      background: linear-gradient(135deg, var(--teal-1), var(--teal-3));
+      background: linear-gradient(135deg, #00d4ff, #0066b3);
       backdrop-filter: blur(20px);
-      color: #002a2a;
-      padding: 13px 22px;
+      color: #ffffff;
+      padding: 14px 24px;
       border-radius: 30px;
       font-size: 13px;
       font-weight: 800;
@@ -633,9 +746,10 @@
       pointer-events: none;
       text-align: center;
       max-width: 90%;
-      border: 2px solid var(--neon);
-      box-shadow: 0 0 30px var(--neon-glow), 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 30px var(--blue-glow), 0 10px 30px rgba(0, 0, 0, 0.6);
       font-family: 'Tajawal', sans-serif;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     }
 
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -644,12 +758,13 @@
     @media (max-width: 480px) {
       body { padding: 12px; }
       .container { padding: 22px 18px 18px; border-radius: 28px; }
-      .warn-icon svg { width: 54px; height: 54px; }
-      .header h1 { font-size: 19px; }
+      .warn-icon svg { width: 56px; height: 56px; }
+      .header h1 { font-size: 20px; }
       .header .sub { font-size: 11px; }
       .stat-card .num { font-size: 22px; }
-      .btn { font-size: 14px; padding: 14px; }
+      .btn { font-size: 14px; padding: 15px; }
       .go-btn { font-size: 15px; padding: 16px; }
+      .official-btn { font-size: 13px; padding: 13px 16px; }
       .lang-btn { padding: 6px 10px; font-size: 10px; }
     }
 
@@ -669,12 +784,12 @@
   <!-- ═════ البطاقة الرئيسية ═════ -->
   <div class="container">
 
-    <!-- أيقونة التحذير -->
+    <!-- أيقونة التحذير (أزرق) -->
     <div class="warn-icon">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L1 21h22L12 2z" stroke="#ff2222" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
-        <path d="M12 9v6" stroke="#ff2222" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="12" cy="18.5" r="1.2" fill="#ff2222"/>
+        <path d="M12 2L1 21h22L12 2z" stroke="#00c8ff" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M12 9v6" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="12" cy="18.5" r="1.3" fill="#00c8ff"/>
       </svg>
     </div>
 
@@ -700,7 +815,7 @@
 
     <!-- صندوق الحالة -->
     <div class="status-box" id="statusBox">
-      <span class="icon" id="sIcon">⏳</span>
+      <span class="icon" id="sIcon">🔒</span>
       <div class="text">
         <div class="title" id="sTitle" data-i18n="checking_link">جاري فحص الرابط</div>
         <div class="desc" id="sDesc" data-i18n="checking_desc">يتم جلب إحصائيات الفيديو الحالية...</div>
@@ -755,14 +870,21 @@
     </div>
 
     <!-- الأزرار -->
-    <button class="btn btn-white" id="openBtn" data-i18n="btn_open_yt">▶️ فتح يوتيوب وإضافة تفاعل</button>
-    <button class="btn btn-transparent" disabled id="checkBtn" data-i18n="btn_check">🔍 تحقق من إضافة اللايك / التعليق</button>
+    <button class="btn btn-primary" id="openBtn" data-i18n="btn_open_yt">▶️ فتح يوتيوب وإضافة تفاعل</button>
+    <button class="btn btn-verify" disabled id="checkBtn" data-i18n="btn_check">🔍 تحقق من إضافة اللايك / التعليق</button>
 
     <div class="go-box" id="goBox">
       <button class="go-btn" id="goBtn" data-i18n="btn_go">🚀 اضغط هنا للذهاب للرابط الأساسي</button>
     </div>
 
-    <button class="btn btn-transparent" id="backBtn" style="margin-top: 10px;" data-i18n="btn_back">↩️ رجوع</button>
+    <button class="btn btn-back" id="backBtn" data-i18n="btn_back">↩️ رجوع</button>
+
+    <!-- 🟦 زر الموقع الرسمي (جديد) -->
+    <a class="official-btn" href="https://oali79298-hub.github.io/Link-aktubar-/" target="_blank" rel="noopener">
+      <span class="dot"></span>
+      <span data-i18n="official_site">🏠 الموقع الرسمي</span>
+      <span>←</span>
+    </a>
 
     <!-- 🟥 إعلان سفلي -->
     <div class="ad-slot">
@@ -804,6 +926,7 @@
         btn_check: '🔍 تحقق من إضافة اللايك / التعليق',
         btn_go: '🚀 اضغط هنا للذهاب للرابط الأساسي',
         btn_back: '↩️ رجوع',
+        official_site: '🏠 الموقع الرسمي',
         loading_stats: '⏳ جاري جلب إحصائيات الفيديو...',
         link_ready: 'رابط جاهز للفتح',
         link_ready_desc: 'اضغط زر فتح يوتيوب بالأسفل واترك لايك أو تعليق.',
@@ -846,6 +969,7 @@
         btn_check: '🔍 Verify like / comment',
         btn_go: '🚀 Tap here to go to main link',
         btn_back: '↩️ Back',
+        official_site: '🏠 Official Site',
         loading_stats: '⏳ Fetching video stats...',
         link_ready: 'Link ready to open',
         link_ready_desc: 'Tap open YouTube button below and leave a like or comment.',
@@ -892,7 +1016,6 @@
       document.getElementById('langAr').classList.toggle('active', lang === 'ar');
       document.getElementById('langEn').classList.toggle('active', lang === 'en');
 
-      // ترجمة رسائل الحالة النشطة
       const statusTitle = document.getElementById('sTitle');
       const statusDesc = document.getElementById('sDesc');
       const titleKey = statusTitle.getAttribute('data-status-key');
@@ -968,8 +1091,8 @@
       tt.textContent = msg;
       tt.className = 'toast show';
       tt.style.background = success
-        ? 'linear-gradient(135deg, #00ff9d, #00c9b7)'
-        : 'linear-gradient(135deg, #00f0d0, #009d9a)';
+        ? 'linear-gradient(135deg, #00d4ff, #0066b3)'
+        : 'linear-gradient(135deg, #0077d4, #003d73)';
       clearTimeout(tt._timeout);
       tt._timeout = setTimeout(() => tt.className = 'toast', 3000);
     }
@@ -1201,7 +1324,7 @@
 
     $('backBtn').onclick = () => window.history.back();
 
-    console.log('🔥 Smart Link — New design + Bilingual AR/EN');
+    console.log('🔷 Smart Link — Blue Design + Bilingual AR/EN');
   </script>
 </body>
 </html>
