@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+  <meta name="theme-color" content="#002a2a">
+  <title>🔓 فتح الرابط الذكي</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --teal-1: #00f0d0;
+      --teal-2: #00c9b7;
+      --teal-3: #009d9a;
+      --teal-4: #007a7a;
+      --neon: #00ff9d;
+      --neon-glow: rgba(0, 255, 157, 0.6);
+      --red: #ff2222;
+      --text: #ffffff;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #030a0a;
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(0, 255, 200, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 90%, rgba(0, 200, 255, 0.12) 0%, transparent 50%);
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      direction: rtl;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ═════ جزيئات متوهجة متحركة ═════ */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+      animation: floatBg 15s ease-in-out infinite;
+    }
+    body::before {
+      width: 380px; height: 380px;
+      background: rgba(0, 240, 208, 0.22);
+      top: -100px; right: -100px;
+    }
+    body::after {
+      width: 450px; height: 450px;
+      background: rgba(0, 200, 255, 0.18);
+      bottom: -140px; left: -140px;
+      animation-delay: -7s;
+    }
+    @keyframes floatBg {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, -40px) scale(1.15); }
+    }
+
+    /* ═════ زر تبديل اللغة ═════ */
+    .lang-toggle {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      left: max(14px, env(safe-area-inset-left));
+      z-index: 9999;
+      display: flex;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid var(--neon);
+      border-radius: 30px;
+      padding: 3px;
+      box-shadow: 0 0 22px var(--neon-glow), 0 8px 24px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    body.lang-en .lang-toggle { left: auto; right: max(14px, env(safe-area-inset-right)); }
+
+    .lang-btn {
+      padding: 7px 13px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      border-radius: 25px;
+      font-family: inherit;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--teal-1), var(--teal-3));
+      color: #002a2a;
+      box-shadow: 0 0 14px var(--neon-glow);
+    }
+
+    /* ═════ البطاقة الرئيسية (مطابقة للصورة) ═════ */
+    .container {
+      max-width: 440px;
+      width: 100%;
+      background: linear-gradient(160deg, #00f0d0 0%, #00c9b7 22%, #009d9a 50%, #007a7a 100%);
+      background-size: 200% 200%;
+      animation: colorFlow 8s ease infinite;
+      border-radius: var(--radius-xl);
+      padding: 26px 22px 22px;
+      border: 2px solid var(--neon);
+      box-shadow:
+        0 0 0 1px rgba(0, 255, 200, 0.2),
+        0 0 40px rgba(0, 255, 180, 0.35),
+        0 0 80px rgba(0, 255, 180, 0.15),
+        0 24px 60px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      position: relative;
+      z-index: 1;
+      animation: colorFlow 8s ease infinite, containerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    @keyframes colorFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes containerIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ═════ أيقونة التحذير ═════ */
+    .warn-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .warn-icon svg {
+      width: 62px;
+      height: 62px;
+      filter: drop-shadow(0 0 14px rgba(255, 0, 0, 0.7));
+      animation: warnPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes warnPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* ═════ الترويسة ═════ */
+    .header {
+      text-align: center;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      margin-bottom: 3px;
+    }
+
+    .header .sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    /* ═════ إعلان ═════ */
+    .ad-slot {
+      width: 100%;
+      margin: 12px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      min-height: 60px;
+      padding: 6px;
+    }
+
+    /* ═════ صندوق الحالة (بستايل قائمة القوانين) ═════ */
+    .status-box {
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: right;
+      backdrop-filter: blur(8px);
+      transition: all 0.4s ease;
+    }
+
+    body.lang-en .status-box { text-align: left; }
+
+    .status-box.ok {
+      border-color: rgba(34, 229, 132, 0.6);
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 25px rgba(34, 229, 132, 0.4);
+    }
+
+    .status-box.err {
+      border-color: rgba(255, 71, 87, 0.6);
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 25px rgba(255, 71, 87, 0.4);
+    }
+
+    .status-box .icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      animation: bounceEmoji 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounceEmoji {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-4px) rotate(-5deg); }
+      75% { transform: translateY(-2px) rotate(5deg); }
+    }
+
+    .status-box .text { flex: 1; min-width: 0; }
+
+    .status-box .text .title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-box .text .desc {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+    }
+
+    /* ═════ رأس الإحصائيات ═════ */
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .stats-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .refresh-badge {
+      font-size: 11px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.28);
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      transition: 0.2s;
+    }
+
+    .refresh-badge:hover { background: rgba(0, 0, 0, 0.45); }
+    .refresh-badge:active { transform: scale(0.95); }
+
+    /* ═════ شبكة الإحصائيات ═════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 14px 10px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card .icon { font-size: 24px; margin-bottom: 4px; display: inline-block; }
+
+    .stat-card .num {
+      font-size: 25px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    .stat-card .tag {
+      font-size: 10px;
+      font-weight: 800;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.85);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card.increased {
+      background: rgba(0, 0, 0, 0.45);
+      border-color: var(--neon);
+      box-shadow: 0 0 30px var(--neon-glow), inset 0 0 20px rgba(0, 255, 157, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .stat-card.increased .num {
+      color: var(--neon);
+      text-shadow: 0 0 20px var(--neon-glow);
+      animation: popNumber 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popNumber {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    .stat-card.increased .tag {
+      background: var(--neon);
+      color: #003d1f;
+      font-weight: 900;
+      box-shadow: 0 0 15px var(--neon-glow);
+    }
+
+    .stat-card.increased .icon { animation: bounceEmoji 1s ease-in-out infinite; }
+
+    /* ═════ الخطوات (مثل قائمة القوانين) ═════ */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: var(--radius-md);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      text-align: right;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.lang-en .step-item { text-align: left; }
+
+    .step-item .num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      flex-shrink: 0;
+      background: rgba(0, 0, 0, 0.4);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .step-item .txt {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 700;
+      flex: 1;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .step-item .txt small {
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 11px;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .step-item.active {
+      border-color: var(--neon);
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 22px var(--neon-glow);
+    }
+
+    .step-item.active .num {
+      background: var(--neon);
+      color: #003d1f;
+      border-color: transparent;
+      box-shadow: 0 0 20px var(--neon-glow);
+      animation: pulseNum 1.8s ease-in-out infinite;
+    }
+
+    .step-item.active .txt { color: var(--neon); }
+
+    @keyframes pulseNum {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--neon-glow); }
+      50% { transform: scale(1.1); box-shadow: 0 0 32px var(--neon-glow); }
+    }
+
+    .step-item.done {
+      border-color: var(--neon);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .step-item.done .num {
+      background: var(--neon);
+      color: transparent;
+      border-color: transparent;
+      box-shadow: 0 0 15px var(--neon-glow);
+    }
+
+    .step-item.done .num::after {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      color: #003d1f;
+      animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes checkPop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .step-item.done .txt { color: var(--neon); }
+    .step-item.done .txt small { color: rgba(0, 255, 157, 0.7); }
+
+    /* ═════ الأزرار (بستايل الصورة) ═════ */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 10px;
+      font-family: inherit;
+      transition: transform 0.15s ease, box-shadow 0.3s ease, opacity 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    /* زر أبيض (مثل "Got it" في الصورة) */
+    .btn-white {
+      background: #ffffff;
+      color: #002a2a;
+      font-weight: 900;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 255, 157, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-white:hover {
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4), 0 0 45px rgba(0, 255, 157, 0.55);
+    }
+
+    /* زر شفاف (مثل "Remind me later") */
+    .btn-transparent {
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--neon);
+      border: 1.5px solid rgba(0, 255, 157, 0.6);
+      backdrop-filter: blur(6px);
+      text-shadow: 0 0 8px var(--neon-glow);
+    }
+
+    .btn-transparent:hover {
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 22px var(--neon-glow);
+    }
+
+    .btn-transparent:disabled,
+    .btn-white:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none;
+    }
+
+    /* زر الذهاب (تدرج ذهبي/بنفسجي) */
+    .go-box { margin: 14px 0 6px; display: none; animation: containerIn 0.5s ease; }
+
+    .go-btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #ffb020, #ff6b00, #ff4ecd);
+      background-size: 200% 200%;
+      animation: colorFlow 3s ease infinite, pulseGlow 2s ease-in-out infinite;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(255, 176, 32, 0.4), 0 0 45px rgba(255, 107, 0, 0.35);
+      font-family: inherit;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .go-btn:active { transform: scale(0.97); }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 10px 30px rgba(255, 176, 32, 0.4), 0 0 45px rgba(255, 107, 0, 0.35); }
+      50% { box-shadow: 0 10px 40px rgba(255, 176, 32, 0.6), 0 0 65px rgba(255, 107, 0, 0.5); }
+    }
+
+    /* ═════ المحمّل ═════ */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .loader.show { display: flex; }
+
+    .loader .sp {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(0, 255, 200, 0.15);
+      border-radius: 50%;
+      border-top-color: var(--neon);
+      animation: spin 0.7s linear infinite;
+      box-shadow: 0 0 25px var(--neon-glow);
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loader .txt {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      animation: pulseTxt 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseTxt {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* ═════ Toast ═════ */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-140px);
+      background: linear-gradient(135deg, var(--teal-1), var(--teal-3));
+      backdrop-filter: blur(20px);
+      color: #002a2a;
+      padding: 13px 22px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 800;
+      z-index: 10000;
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90%;
+      border: 2px solid var(--neon);
+      box-shadow: 0 0 30px var(--neon-glow), 0 10px 30px rgba(0, 0, 0, 0.5);
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ═════ Responsive ═════ */
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .container { padding: 22px 18px 18px; border-radius: 28px; }
+      .warn-icon svg { width: 54px; height: 54px; }
+      .header h1 { font-size: 19px; }
+      .header .sub { font-size: 11px; }
+      .stat-card .num { font-size: 22px; }
+      .btn { font-size: 14px; padding: 14px; }
+      .go-btn { font-size: 15px; padding: 16px; }
+      .lang-btn { padding: 6px 10px; font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═════ زر تبديل اللغة ═════ -->
+  <div class="lang-toggle">
+    <button type="button" class="lang-btn active" id="langAr" data-lang="ar">🇸🇦 عربي</button>
+    <button type="button" class="lang-btn" id="langEn" data-lang="en">🇬🇧 EN</button>
+  </div>
+
+  <!-- ═════ البطاقة الرئيسية ═════ -->
+  <div class="container">
+
+    <!-- أيقونة التحذير -->
+    <div class="warn-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L1 21h22L12 2z" stroke="#ff2222" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+        <path d="M12 9v6" stroke="#ff2222" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="12" cy="18.5" r="1.2" fill="#ff2222"/>
+      </svg>
+    </div>
+
+    <!-- الترويسة -->
+    <div class="header">
+      <h1 id="headerTitle">فتح الرابط الذكي</h1>
+      <div class="sub" id="headerSub">تفاعل مع الفيديو لفتح القفل</div>
+    </div>
+
+    <!-- 🟦 إعلان علوي -->
+    <div class="ad-slot">
+      <script>
+        atOptions = {
+          'key' : 'bba1284ed30ea5781eb25d88ffec21d5',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highrevenueformat.com/bba1284ed30ea5781eb25d88ffec21d5/invoke.js"></script>
+    </div>
+
+    <!-- صندوق الحالة -->
+    <div class="status-box" id="statusBox">
+      <span class="icon" id="sIcon">⏳</span>
+      <div class="text">
+        <div class="title" id="sTitle" data-i18n="checking_link">جاري فحص الرابط</div>
+        <div class="desc" id="sDesc" data-i18n="checking_desc">يتم جلب إحصائيات الفيديو الحالية...</div>
+      </div>
+    </div>
+
+    <!-- رأس الإحصائيات -->
+    <div class="stats-header">
+      <span class="stats-title" data-i18n="stats_title">📊 إحصائيات الفيديو</span>
+      <span class="refresh-badge" id="quickRefreshBtn" data-i18n="refresh">🔄 تحديث</span>
+    </div>
+
+    <!-- شبكة الإحصائيات -->
+    <div class="stats-grid">
+      <div class="stat-card" id="likeCard">
+        <div class="icon">👍</div>
+        <div class="num" id="likeNum">-</div>
+        <div class="label" data-i18n="total_likes">إجمالي اللايكات</div>
+        <div class="tag" id="likeTag" data-i18n="waiting_load">⏳ بانتظار التحميل</div>
+      </div>
+      <div class="stat-card" id="commentCard">
+        <div class="icon">💬</div>
+        <div class="num" id="commentNum">-</div>
+        <div class="label" data-i18n="total_comments">إجمالي التعليقات</div>
+        <div class="tag" id="commentTag" data-i18n="waiting_load">⏳ بانتظار التحميل</div>
+      </div>
+    </div>
+
+    <!-- الخطوات -->
+    <div class="steps">
+      <div class="step-item" id="step1">
+        <span class="num">1</span>
+        <div class="txt">
+          <span data-i18n="step1_title">📱 افتح الفيديو</span>
+          <small data-i18n="step1_sub">عبر تطبيق يوتيوب</small>
+        </div>
+      </div>
+      <div class="step-item" id="step2">
+        <span class="num">2</span>
+        <div class="txt">
+          <span data-i18n="step2_title">❤️ ضع إعجاب أو تعليق</span>
+          <small data-i18n="step2_sub">على الفيديو الحالي</small>
+        </div>
+      </div>
+      <div class="step-item" id="step3">
+        <span class="num">3</span>
+        <div class="txt">
+          <span data-i18n="step3_title">✅ تحقق فوري ومزامنة</span>
+          <small data-i18n="step3_sub">اضغط زر التحقق بالأسفل</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- الأزرار -->
+    <button class="btn btn-white" id="openBtn" data-i18n="btn_open_yt">▶️ فتح يوتيوب وإضافة تفاعل</button>
+    <button class="btn btn-transparent" disabled id="checkBtn" data-i18n="btn_check">🔍 تحقق من إضافة اللايك / التعليق</button>
+
+    <div class="go-box" id="goBox">
+      <button class="go-btn" id="goBtn" data-i18n="btn_go">🚀 اضغط هنا للذهاب للرابط الأساسي</button>
+    </div>
+
+    <button class="btn btn-transparent" id="backBtn" style="margin-top: 10px;" data-i18n="btn_back">↩️ رجوع</button>
+
+    <!-- 🟥 إعلان سفلي -->
+    <div class="ad-slot">
+      <script async="async" data-cfasync="false" src="https://pl29581573.profitableratecpmnetwork.com/272c44df2e38e34bc16b9f80978efab2/invoke.js"></script>
+      <div id="container-272c44df2e38e34bc16b9f80978efab2"></div>
+    </div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="sp"></div>
+    <div class="txt" data-i18n="loading_stats">⏳ جاري جلب إحصائيات الفيديو...</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════════
+    // 🌐 نظام اللغتين
+    // ═══════════════════════════════════════════════
+    const I18N = {
+      ar: {
+        headerTitle: 'فتح الرابط الذكي',
+        headerSub: 'تفاعل مع الفيديو لفتح القفل',
+        checking_link: 'جاري فحص الرابط',
+        checking_desc: 'يتم جلب إحصائيات الفيديو الحالية...',
+        stats_title: '📊 إحصائيات الفيديو',
+        refresh: '🔄 تحديث',
+        total_likes: 'إجمالي اللايكات',
+        total_comments: 'إجمالي التعليقات',
+        waiting_load: '⏳ بانتظار التحميل',
+        waiting_action: '⏳ بانتظار التفاعل',
+        step1_title: '📱 افتح الفيديو',
+        step1_sub: 'عبر تطبيق يوتيوب',
+        step2_title: '❤️ ضع إعجاب أو تعليق',
+        step2_sub: 'على الفيديو الحالي',
+        step3_title: '✅ تحقق فوري ومزامنة',
+        step3_sub: 'اضغط زر التحقق بالأسفل',
+        btn_open_yt: '▶️ فتح يوتيوب وإضافة تفاعل',
+        btn_check: '🔍 تحقق من إضافة اللايك / التعليق',
+        btn_go: '🚀 اضغط هنا للذهاب للرابط الأساسي',
+        btn_back: '↩️ رجوع',
+        loading_stats: '⏳ جاري جلب إحصائيات الفيديو...',
+        link_ready: 'رابط جاهز للفتح',
+        link_ready_desc: 'اضغط زر فتح يوتيوب بالأسفل واترك لايك أو تعليق.',
+        invalid_link: 'رابط غير صالح',
+        invalid_link_desc: 'لم يتم العثور على المعرف في الرابط.',
+        video_error: 'خطأ في الفيديو',
+        video_error_desc: 'لم يتم العثور على معرف الفيديو.',
+        expired_link: 'رابط منتهي',
+        expired_link_desc: 'هذا الرابط تم حذفه أو غير متوفر حالياً.',
+        unlocked: 'تم فتح القفل بنجاح 🎉',
+        unlocked_desc: 'تم اكتشاف التفاعل! يمكنك الانتقال للرابط الأساسي.',
+        like_increased: '✅ تم تزايد اللايكات',
+        comment_increased: '✅ تم تزايد التعليق',
+        toast_stats_updated: '🔄 تم تحديث الإحصائيات',
+        toast_no_video: '⚠️ لا يوجد فيديو مرتبط',
+        toast_open_first: '⚠️ يرجى النقر على زر فتح يوتيوب أولاً',
+        toast_no_id: '⚠️ لا يوجد معرف فيديو',
+        toast_no_net: '⚠️ تعذر التحقق، تأكد من اتصال الشبكة',
+        toast_no_increase: '❌ لم نكتشف تفاعل جديد! أضف لايك أو تعليق ثم اضغط تحقق مجدداً.',
+        toast_success: '🎉 ممتاز! تم فتح القفل بنجاح'
+      },
+      en: {
+        headerTitle: 'Smart Link Unlock',
+        headerSub: 'Interact with video to unlock',
+        checking_link: 'Checking link',
+        checking_desc: 'Fetching current video stats...',
+        stats_title: '📊 Video Statistics',
+        refresh: '🔄 Refresh',
+        total_likes: 'Total Likes',
+        total_comments: 'Total Comments',
+        waiting_load: '⏳ Waiting to load',
+        waiting_action: '⏳ Waiting for action',
+        step1_title: '📱 Open the video',
+        step1_sub: 'via YouTube app',
+        step2_title: '❤️ Like or comment',
+        step2_sub: 'on the current video',
+        step3_title: '✅ Instant verify & sync',
+        step3_sub: 'Tap verify button below',
+        btn_open_yt: '▶️ Open YouTube & interact',
+        btn_check: '🔍 Verify like / comment',
+        btn_go: '🚀 Tap here to go to main link',
+        btn_back: '↩️ Back',
+        loading_stats: '⏳ Fetching video stats...',
+        link_ready: 'Link ready to open',
+        link_ready_desc: 'Tap open YouTube button below and leave a like or comment.',
+        invalid_link: 'Invalid link',
+        invalid_link_desc: 'No ID found in the URL.',
+        video_error: 'Video error',
+        video_error_desc: 'Video ID not found.',
+        expired_link: 'Expired link',
+        expired_link_desc: 'This link was deleted or is unavailable.',
+        unlocked: 'Unlocked successfully 🎉',
+        unlocked_desc: 'Interaction detected! You can proceed to the main link.',
+        like_increased: '✅ Likes increased',
+        comment_increased: '✅ Comment added',
+        toast_stats_updated: '🔄 Stats updated',
+        toast_no_video: '⚠️ No video linked',
+        toast_open_first: '⚠️ Please tap open YouTube first',
+        toast_no_id: '⚠️ No video ID found',
+        toast_no_net: '⚠️ Verification failed, check connection',
+        toast_no_increase: '❌ No new interaction detected! Like/comment then verify again.',
+        toast_success: '🎉 Excellent! Unlocked successfully'
+      }
+    };
+
+    let currentLang = 'ar';
+
+    function t(key) {
+      return I18N[currentLang][key] || key;
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.body.classList.toggle('lang-en', lang === 'en');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[lang][key]) el.textContent = I18N[lang][key];
+      });
+
+      document.getElementById('headerTitle').textContent = t('headerTitle');
+      document.getElementById('headerSub').textContent = t('headerSub');
+
+      document.getElementById('langAr').classList.toggle('active', lang === 'ar');
+      document.getElementById('langEn').classList.toggle('active', lang === 'en');
+
+      // ترجمة رسائل الحالة النشطة
+      const statusTitle = document.getElementById('sTitle');
+      const statusDesc = document.getElementById('sDesc');
+      const titleKey = statusTitle.getAttribute('data-status-key');
+      const descKey = statusDesc.getAttribute('data-status-key');
+      if (titleKey) statusTitle.textContent = t(titleKey);
+      if (descKey) statusDesc.textContent = t(descKey);
+
+      const likeTag = document.getElementById('likeTag');
+      const commentTag = document.getElementById('commentTag');
+      if (likeTag.getAttribute('data-status-key')) likeTag.textContent = t(likeTag.getAttribute('data-status-key'));
+      if (commentTag.getAttribute('data-status-key')) commentTag.textContent = t(commentTag.getAttribute('data-status-key'));
+
+      try { localStorage.setItem('smartlink_lang', lang); } catch (e) {}
+    }
+
+    document.getElementById('langAr').addEventListener('click', () => { if (currentLang !== 'ar') applyLanguage('ar'); });
+    document.getElementById('langEn').addEventListener('click', () => { if (currentLang !== 'en') applyLanguage('en'); });
+
+    try {
+      const saved = localStorage.getItem('smartlink_lang');
+      if (saved === 'en') currentLang = 'en';
+    } catch (e) {}
+    applyLanguage(currentLang);
+
+    // ═══════════════════════════════════════════════
+    // 🛡️ الحماية من يوتيوب
+    // ═══════════════════════════════════════════════
+    (function blockYouTube() {
+      if (window.top !== window.self) {
+        document.body.innerHTML = '<h1 style="text-align:center;margin-top:50px;color:#fff;">🚫 Blocked</h1>';
+        throw new Error('Blocked');
+      }
+      const ua = navigator.userAgent.toLowerCase();
+      if (ua.includes('youtube') || ua.includes('yt') || ua.includes('com.google.android.youtube') || ua.includes('youtubeios')) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#fff;font-family:Tajawal,sans-serif;"><h1>🚫 Blocked</h1></div>';
+        throw new Error('Blocked');
+      }
+      try {
+        const ref = document.referrer.toLowerCase();
+        if (ref.includes('youtube.com') || ref.includes('youtu.be')) {
+          window.location.href = 'about:blank';
+          throw new Error('Blocked');
+        }
+      } catch(e) {}
+      const m = document.createElement('meta');
+      m.name = 'robots';
+      m.content = 'noindex, nofollow, noarchive, nosnippet';
+      document.head.appendChild(m);
+    })();
+
+    // ═══════════════════════════════════════════════
+    // 🔥 Firebase
+    // ═══════════════════════════════════════════════
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBHnknMBiVdigipFyLMNkdFcm_tOQKWc-4",
+      authDomain: "aktubar98.firebaseapp.com",
+      databaseURL: "https://aktubar98-default-rtdb.firebaseio.com",
+      projectId: "aktubar98",
+      storageBucket: "aktubar98.appspot.com",
+      messagingSenderId: "679902534827",
+      appId: "1:679902534827:android:03edb9ea18b42eaef7abee"
+    };
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const DB = firebase.database();
+
+    const YT_KEY = 'AIzaSyCUnKNsevt64NbW3xg7RMsmbF5v6-Twixs';
+    let code, data, videoId, mainUrl, initialLikes = 0, initialComments = 0, verified = false, opened = false;
+
+    const $ = id => document.getElementById(id);
+
+    function showToast(msg, success = false) {
+      const tt = $('toast');
+      tt.textContent = msg;
+      tt.className = 'toast show';
+      tt.style.background = success
+        ? 'linear-gradient(135deg, #00ff9d, #00c9b7)'
+        : 'linear-gradient(135deg, #00f0d0, #009d9a)';
+      clearTimeout(tt._timeout);
+      tt._timeout = setTimeout(() => tt.className = 'toast', 3000);
+    }
+
+    function updateUI(titleKey, descKey, icon, status) {
+      const st = $('sTitle'), sd = $('sDesc');
+      st.setAttribute('data-status-key', titleKey);
+      sd.setAttribute('data-status-key', descKey);
+      st.textContent = t(titleKey);
+      sd.textContent = t(descKey);
+      $('sIcon').textContent = icon;
+      $('statusBox').className = 'status-box ' + (status === 'ok' ? 'ok' : status === 'err' ? 'err' : '');
+    }
+
+    function setStep(n, s) {
+      const el = $(`step${n}`);
+      if (!el) return;
+      el.className = 'step-item';
+      if (s === 'done') el.classList.add('done');
+      else if (s === 'active') el.classList.add('active');
+    }
+
+    function extractVideoId(url) {
+      if (!url) return null;
+      const patterns = [
+        /(?:youtube\.com\/shorts\/)([^"&?\/\s]{11})/,
+        /(?:youtube\.com\/watch\?v=)([^"&?\/\s]{11})/,
+        /(?:youtu\.be\/)([^"&?\/\s]{11})/,
+        /(?:youtube\.com\/embed\/)([^"&?\/\s]{11})/,
+        /(?:youtube\.com\/v\/)([^"&?\/\s]{11})/
+      ];
+      for (const p of patterns) {
+        const m = url.match(p);
+        if (m) return m[1];
+      }
+      return null;
+    }
+
+    async function fetchWithTimeout(url, timeout = 8000) {
+      const c = new AbortController();
+      const id = setTimeout(() => c.abort(), timeout);
+      try {
+        const r = await fetch(url, { signal: c.signal });
+        clearTimeout(id);
+        return r;
+      } catch (e) { clearTimeout(id); throw e; }
+    }
+
+    async function fetchCurrentStats(silent = false) {
+      if (!videoId) return { likes: 0, comments: 0 };
+      if (!silent) $('loader').classList.add('show');
+
+      const urls = [
+        `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YT_KEY}`,
+        `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YT_KEY}&alt=json`,
+        `https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YT_KEY}`
+      ];
+
+      const proxyUrls = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(urls[0])}`,
+        `https://corsproxy.io/?${encodeURIComponent(urls[0])}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urls[0])}`
+      ];
+
+      const tryParse = (resData) => {
+        if (resData.items && resData.items.length > 0) {
+          const s = resData.items[0].statistics;
+          const likes = parseInt(s.likeCount) || 0;
+          const comments = parseInt(s.commentCount) || 0;
+          if (!silent) $('loader').classList.remove('show');
+          if (initialLikes === 0 && initialComments === 0) {
+            initialLikes = likes; initialComments = comments;
+            localStorage.setItem(`lk_${videoId}`, likes);
+            localStorage.setItem(`cm_${videoId}`, comments);
+          }
+          $('likeNum').textContent = likes.toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+          $('commentNum').textContent = comments.toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+          return { likes, comments };
+        }
+        return null;
+      };
+
+      for (const url of urls) {
+        try {
+          const r = await fetchWithTimeout(url, 6000);
+          if (r.ok) { const d = await r.json(); const res = tryParse(d); if (res) return res; }
+        } catch (e) {}
+      }
+
+      for (const p of proxyUrls) {
+        try {
+          const r = await fetchWithTimeout(p, 8000);
+          if (r.ok) { const d = await r.json(); const res = tryParse(d); if (res) return res; }
+        } catch (e) {}
+      }
+
+      if (!silent) $('loader').classList.remove('show');
+      const cl = parseInt(localStorage.getItem(`lk_${videoId}`)) || 0;
+      const cc = parseInt(localStorage.getItem(`cm_${videoId}`)) || 0;
+      if (cl > 0 || cc > 0) {
+        $('likeNum').textContent = cl.toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+        $('commentNum').textContent = cc.toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+        return { likes: cl, comments: cc };
+      }
+      showToast(t('toast_no_net'));
+      return { likes: 0, comments: 0 };
+    }
+
+    // ═══════════════════════════════════════════════
+    // تحميل البيانات
+    // ═══════════════════════════════════════════════
+    const urlParams = new URLSearchParams(window.location.search);
+    code = urlParams.get('id');
+
+    if (!code) {
+      updateUI('invalid_link', 'invalid_link_desc', '❌', 'err');
+    } else {
+      DB.ref('links/' + code).once('value', snapshot => {
+        if (snapshot.exists()) {
+          data = snapshot.val();
+          mainUrl = data.mainUrl;
+          videoId = data.videoId || extractVideoId(data.youtubeUrl);
+
+          if (!videoId) {
+            updateUI('video_error', 'video_error_desc', '❌', 'err');
+            return;
+          }
+
+          DB.ref('links/' + code + '/visits').transaction(v => (v || 0) + 1);
+
+          updateUI('link_ready', 'link_ready_desc', '🔓', '');
+          setStep(1, 'active');
+
+          fetchCurrentStats(true).then(() => {
+            $('checkBtn').disabled = false;
+            $('likeTag').setAttribute('data-status-key', 'waiting_action');
+            $('commentTag').setAttribute('data-status-key', 'waiting_action');
+            $('likeTag').textContent = t('waiting_action');
+            $('commentTag').textContent = t('waiting_action');
+          });
+        } else {
+          updateUI('expired_link', 'expired_link_desc', '❌', 'err');
+        }
+      });
+    }
+
+    $('quickRefreshBtn').onclick = () => {
+      fetchCurrentStats(false).then(() => showToast(t('toast_stats_updated')));
+    };
+
+    $('openBtn').onclick = () => {
+      if (!data || !videoId) { showToast(t('toast_no_video')); return; }
+      localStorage.setItem(`op_${videoId}`, 'true');
+      opened = true;
+      if (navigator.vibrate) navigator.vibrate(30);
+
+      const webUrl = data.youtubeUrl || `https://www.youtube.com/watch?v=${videoId}`;
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+      if (/Android/i.test(ua)) {
+        window.location.href = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+        setTimeout(() => { window.open(webUrl, '_blank'); }, 400);
+      } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        window.location.href = `youtube://www.youtube.com/watch?v=${videoId}`;
+        setTimeout(() => { window.open(webUrl, '_blank'); }, 400);
+      } else {
+        window.open(webUrl, '_blank');
+      }
+
+      setStep(1, 'done');
+      setStep(2, 'active');
+      $('checkBtn').disabled = false;
+    };
+
+    $('checkBtn').onclick = async () => {
+      if (!opened) { showToast(t('toast_open_first')); return; }
+      if (!videoId) { showToast(t('toast_no_id')); return; }
+      if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+
+      const current = await fetchCurrentStats(false);
+      if (!current || (current.likes === 0 && current.comments === 0)) {
+        showToast(t('toast_no_net'));
+        return;
+      }
+
+      const oldLikes = parseInt(localStorage.getItem(`lk_${videoId}`)) || initialLikes;
+      const oldComments = parseInt(localStorage.getItem(`cm_${videoId}`)) || initialComments;
+
+      const likeUp = current.likes > oldLikes;
+      const commentUp = current.comments > oldComments;
+
+      if (likeUp) {
+        $('likeCard').classList.add('increased');
+        $('likeTag').removeAttribute('data-status-key');
+        $('likeTag').textContent = t('like_increased');
+      }
+      if (commentUp) {
+        $('commentCard').classList.add('increased');
+        $('commentTag').removeAttribute('data-status-key');
+        $('commentTag').textContent = t('comment_increased');
+      }
+
+      if (likeUp || commentUp) {
+        verified = true;
+        setStep(2, 'done');
+        setStep(3, 'done');
+        updateUI('unlocked', 'unlocked_desc', '🎉', 'ok');
+
+        $('openBtn').style.display = 'none';
+        $('checkBtn').style.display = 'none';
+        $('goBox').style.display = 'block';
+
+        DB.ref('links/' + code + '/completed').transaction(v => (v || 0) + 1);
+        if (navigator.vibrate) navigator.vibrate([50, 40, 50, 40, 50]);
+        showToast(t('toast_success'), true);
+      } else {
+        showToast(t('toast_no_increase'));
+        if (navigator.vibrate) navigator.vibrate(80);
+        $('checkBtn').disabled = false;
+      }
+    };
+
+    $('goBtn').onclick = () => {
+      if (verified && mainUrl) {
+        if (navigator.vibrate) navigator.vibrate(30);
+        window.location.href = mainUrl;
+      }
+    };
+
+    $('backBtn').onclick = () => window.history.back();
+
+    console.log('🔥 Smart Link — New design + Bilingual AR/EN');
+  </script>
+</body>
+</html>
